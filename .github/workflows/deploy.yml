@@ -80,7 +80,7 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/yor-bot-img:latest
             docker stop yor-bot-dc-container
             docker rm yor-bot-dc-container
-            docker run -d --name yor-bot-dc-container -p 8001:80 nicodav28/yor-bot-img:latest
+            docker run -d --name yor-bot-dc-container nicodav28/yor-bot-img:latest
 
       - name: Prune System
         run: "echo y | docker system prune -a"
