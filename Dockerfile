@@ -1,20 +1,24 @@
-# Use a Node.js base image
+# Usa una imagen base de Node.js
 FROM node:20-alpine
 
-# Set the working directory in the container
+# Establece el directorio de trabajo en el contenedor
 WORKDIR /usr/src/app
 
-# Copy package.json and yarn.lock (if it exists)
+# Copia el archivo package.json y el archivo yarn.lock (si existe)
 COPY package.json ./
+COPY yarn.lock* ./
 
-# Install production dependencies
+# Instala las dependencias de producción
 RUN yarn install --production
 
-# Copy the rest of the application code
+# Instala TypeScript como una dependencia de desarrollo
+RUN yarn add --dev typescript
+
+# Copia el resto del código de la aplicación
 COPY . .
 
-# Build the application (reemplaza esto con tu comando de construcción real)
+# Compila la aplicación (reemplaza esto con tu comando de construcción real)
 RUN yarn build
 
-# Define the command to run your application
+# Define el comando para ejecutar tu aplicación
 CMD ["node", "dist/main.js"]
