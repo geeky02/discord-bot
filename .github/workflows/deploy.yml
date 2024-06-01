@@ -32,8 +32,21 @@ jobs:
         run: |
           yarn build
 
-      - name: Validate files
+      - name: Create .env file
+        run: |
+          echo "DC_BOT_TOKEN=${{ secrets.DC_BOT_TOKEN }}" >> .env
+          echo "DC_BOT_PUBLIC_KEY=${{ secrets.DC_BOT_PUBLIC_KEY }}" >> .env
+          echo "DC_APP_ID=${{ secrets.DC_APP_ID }}" >> .env
+          echo "DC_BOT_SECRET_KEY=${{ secrets.DC_BOT_SECRET_KEY }}" >> .env
+
+      - name: Copy .env to dist directory
+        run: cp .env dist/
+
+      - name: Validate root files
         run: ls -l
+
+      - name: Validate dist files
+        run: ls -l dist/
 
       - name: Save Build Artifact
         uses: actions/upload-artifact@v3
