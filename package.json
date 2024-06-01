@@ -2,18 +2,28 @@
   "name": "@jfn-engine/yor-bot",
   "version": "1.0.0",
   "description": "Discord bot",
-  "main": "main.js",
+  "main": "dist/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/main.ts"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JFN-Engine/Yor-Bot.git"
+    "url": "https://github.com/JFN-Engine/Yor-Bot.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/JFN-Engine/Yor-Bot/issues"
   },
-  "homepage": "https://github.com/JFN-Engine/Yor-Bot#readme"
+  "homepage": "https://github.com/JFN-Engine/Yor-Bot#readme",
+  "devDependencies": {
+    "@types/node": "^20.13.0",
+    "nodemon": "^3.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "discord.js": "^14.15.2",
+    "dotenv": "^16.4.5"
+  }
 }
