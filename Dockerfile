@@ -1,3 +1,7 @@
 FROM node:14-alpine
 
-CMD ["node", "./dist/main.js"]
+WORKDIR /usr/src/app
+
+COPY ./dist /usr/src/app
+
+CMD ["node", "main.js"]

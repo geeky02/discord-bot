@@ -45,8 +45,8 @@ jobs:
       - name: Validate root files
         run: ls -l
 
-      - name: Validate dist files
-        run: ls -l dist/
+      - name: Show .env content
+        run: cat ./dist/.env
 
       - name: Save Build Artifact
         uses: actions/upload-artifact@v3
