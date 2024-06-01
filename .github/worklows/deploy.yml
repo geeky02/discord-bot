@@ -1,0 +1,86 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: "."
+          fetch-depth: 0
+          show-progress: "true"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install Yarn
+        run: |
+          npm install -g yarn
+
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      - name: Build app
+        run: |
+          yarn build
+
+      - name: Validate files
+        run: ls -l
+
+      - name: Save Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: yor-bot
+          path: dist/
+          retention-days: 1
+
+  Deployment:
+    runs-on: ubuntu-latest
+    needs: [Build]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: yor-bot
+          path: dist/
+
+      - name: Validate files
+        run: ls -l dist/
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Container Build and Push
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/yor-bot-img:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/yor-bot-img:latest
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASS_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/yor-bot-img:latest
+            docker stop yor-bot-dc-container
+            docker rm yor-bot-dc-container
+            docker run -d --name yor-bot-dc-container -p 8001:80 nicodav28/yor-bot-img:latest
+
+      - name: Prune System
+        run: "echo y | docker system prune -a"

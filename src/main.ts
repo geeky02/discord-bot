@@ -1,7 +1,6 @@
 require("dotenv").config();
 
-import { REST, Routes } from "discord.js";
-import { Client, GatewayIntentBits } from "discord.js";
+import { REST, Routes, Client, GatewayIntentBits } from "discord.js";
 
 const refreshCommands = async () => {
   const commands = [
