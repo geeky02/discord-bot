@@ -28,10 +28,6 @@ jobs:
         run: |
           yarn install
 
-      - name: Install dotenv
-        run: |
-          yarn add dotenv --prod
-
       - name: Build app
         run: |
           yarn build
@@ -43,20 +39,14 @@ jobs:
           echo "DC_APP_ID=${{ secrets.DC_APP_ID }}" >> .env
           echo "DC_BOT_SECRET_KEY=${{ secrets.DC_BOT_SECRET_KEY }}" >> .env
 
-      - name: Copy .env to dist directory
-        run: cp .env dist/
-
       - name: Validate root files
         run: ls -l
-
-      - name: Show .env content
-        run: cat ./dist/.env
 
       - name: Save Build Artifact
         uses: actions/upload-artifact@v3
         with:
           name: yor-bot
-          path: dist/
+          path: ./
           retention-days: 1
 
   Deployment:
@@ -71,9 +61,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: yor-bot
-          path: dist/
+          path: ./
 
       - name: Validate files
+        run: ls -l
+
+      - name: Validate dist files
         run: ls -l dist/
 
       - name: Set up Docker Buildx

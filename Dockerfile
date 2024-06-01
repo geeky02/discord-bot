@@ -2,6 +2,6 @@ FROM node:14-alpine
 
 WORKDIR /usr/src/app
 
-COPY ./dist /usr/src/app
+COPY ./ /usr/src/app
 
-CMD ["node", "main.js"]
+CMD ["node", "./dist/main.js"]
