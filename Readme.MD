@@ -95,7 +95,7 @@ Para ejecutar el proyecto en un entorno Windows, sigue estos pasos:
 2. Ejecuta el siguiente comando para iniciar el bot en modo de desarrollo:
 
     ```bash
-    yarn dev
+    yarn dev-win
     ```
 
 ### Linux
