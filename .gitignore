@@ -1,9 +1,6 @@
 # Node modules
 node_modules/
 
-# Environment variables
-.env
-
 # Logs
 logs/
 *.log
@@ -34,7 +31,7 @@ dist/
 .yarn-integrity
 
 # dotenv environment variable file
-.env.*
+/.env
 
 # Local npm binaries
 .npmrc
