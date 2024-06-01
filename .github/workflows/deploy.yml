@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: |
           yarn install
+
+      - name: Install dotenv
+        run: |
           yarn add dotenv --prod
 
       - name: Build app
