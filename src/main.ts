@@ -1,72 +1,52 @@
-// require("dotenv").config();
+require("dotenv").config();
 
-// const { REST } = require("@discordjs/rest");
-// const { Routes } = require("discord-api-types/v9");
-// const { Client, Collection } = require("discord.js");
-// const { Player } = require("discord-player");
+import { REST, Routes } from "discord.js";
+import { Client, GatewayIntentBits } from "discord.js";
 
-// const fs = require("fs");
-// const path = require("path");
+const refreshCommands = async () => {
+  const commands = [
+    {
+      name: "ping",
+      description: "Replies with Pong!",
+    },
+  ];
 
-// const client = new Client({
-//   intents: ["Guilds", "GuildMessages", "GuildVoiceStates"],
-// });
+  // Verificar si process.env.DC_BOT_TOKEN está definido
+  if (!process.env.DC_BOT_TOKEN || !process.env.DC_APP_ID) {
+    throw new Error(
+      "DC_BOT_TOKEN or DC_APP_ID not found in environment variables."
+    );
+  }
 
-// const commands = [];
-// client.commands = new Collection();
+  const rest = new REST({ version: "10" }).setToken(process.env.DC_BOT_TOKEN);
 
-// const commandsPath = path.join(__dirname, "commands"); // E:\yt\discord bot\js\intro\commands
-// const commandFiles = fs
-//   .readdirSync(commandsPath)
-//   .filter((file) => file.endsWith(".js"));
-// for (const file of commandFiles) {
-//   const filePath = path.join(commandsPath, file);
-//   const command = require(filePath);
+  try {
+    console.log("Started refreshing application (/) commands.");
 
-//   client.commands.set(command.data.name, command);
-//   commands.push(command.data.toJSON());
-// }
+    await rest.put(Routes.applicationCommands(process.env.DC_APP_ID), {
+      body: commands,
+    });
 
-// // Add the player on the client
-// client.player = new Player(client, {
-//   ytdlOptions: {
-//     quality: "highestaudio",
-//     highWaterMark: 1 << 25,
-//   },
-// });
+    console.log("Successfully reloaded application (/) commands.");
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-// client.on("ready", () => {
-//   // Get all ids of the servers
-//   const guild_ids = client.guilds.cache.map((guild) => guild.id);
+refreshCommands().catch((error) => console.error(error));
 
-//   const rest = new REST({ version: "9" }).setToken(process.env.DC_BOT_TOKEN);
-//   for (const guildId of guild_ids) {
-//     rest
-//       .put(Routes.applicationGuildCommands(process.env.DC_APP_ID, guildId), {
-//         body: commands,
-//       })
-//       .then(() =>
-//         console.log("Successfully updated commands for guild " + guildId)
-//       )
-//       .catch(console.error);
-//   }
-// });
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-// client.on("interactionCreate", async (interaction) => {
-//   if (!interaction.isCommand()) return;
+client.on("ready", () => {
+  console.log(`Logged in as ${client.user?.tag ?? "none"}!`);
+});
 
-//   const command = client.commands.get(interaction.commandName);
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
 
-//   if (!command) return;
+  if (interaction.commandName === "ping") {
+    await interaction.reply("Pong!");
+  }
+});
 
-//   try {
-//     await command.execute({ client, interaction });
-//   } catch (error) {
-//     console.error(error);
-//     await interaction.reply({
-//       content: "There was an error executing this command",
-//     });
-//   }
-// });
-
-// client.login(process.env.DC_BOT_TOKEN);
+client.login(process.env.DC_BOT_TOKEN);
