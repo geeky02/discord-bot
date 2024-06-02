@@ -1,51 +1,64 @@
-require("dotenv").config();
+import * as dotenv from "dotenv";
+dotenv.config();
 
-import { REST, Routes, Client, GatewayIntentBits } from "discord.js";
+import { GatewayIntentBits, Interaction } from "discord.js";
+import { readdirSync } from "fs";
+import { join } from "path";
+import ExtendedClient from "./client";
+import { Command } from "./types";
+/**
+ * This file is responsible for initializing the Bot, and reading the commands
+ * that are available on the commands folder
+ */
 
-const refreshCommands = async () => {
-  const commands = [
-    {
-      name: "ping",
-      description: "Replies with Pong!",
-    },
-  ];
-
-  // Verificar si process.env.DC_BOT_TOKEN está definido
-  if (!process.env.DC_BOT_TOKEN || !process.env.DC_APP_ID) {
-    throw new Error(
-      "DC_BOT_TOKEN or DC_APP_ID not found in environment variables."
-    );
-  }
-
-  const rest = new REST({ version: "10" }).setToken(process.env.DC_BOT_TOKEN);
-
-  try {
-    console.log("Started refreshing application (/) commands.");
-
-    await rest.put(Routes.applicationCommands(process.env.DC_APP_ID), {
-      body: commands,
-    });
-
-    console.log("Successfully reloaded application (/) commands.");
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-refreshCommands().catch((error) => console.error(error));
-
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-
-client.on("ready", () => {
-  console.log(`Logged in as ${client.user?.tag ?? "none"}!`);
+/*Tells to the bot the discord events he is going to process */
+const client = new ExtendedClient({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
 });
 
-client.on("interactionCreate", async (interaction) => {
+/*Read and register the commands*/
+const commandsPath = join(__dirname, "commands");
+const commandFiles = readdirSync(commandsPath).filter((file) =>
+  file.endsWith(".ts")
+);
+
+for (const file of commandFiles) {
+  const command: Command = require(join(commandsPath, file)).default;
+  client.commands.set(command.data.name, command);
+}
+
+client.once("ready", () => {
+  console.log(`Logged in as ${client.user?.tag}`);
+});
+
+/*
+Is listening for a command entered by a user and the it validate's if the command
+exists on the app
+*/
+client.on("interactionCreate", async (interaction: Interaction) => {
+  if (!interaction.isCommand()) return;
+
+  // Usar type guard para asegurarse de que es un ChatInputCommandInteraction
   if (!interaction.isChatInputCommand()) return;
 
-  if (interaction.commandName === "ping") {
-    await interaction.reply("Pong!");
+  const command = client.commands.get(interaction.commandName);
+
+  if (!command) return;
+
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    await interaction.reply({
+      content: "There was an error executing that command!",
+      ephemeral: true,
+    });
   }
 });
 
-client.login(process.env.DC_BOT_TOKEN);
+// Login to Discord with your app's token
+client.login(process.env.DISCORD_TOKEN);
