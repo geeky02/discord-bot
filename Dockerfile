@@ -21,7 +21,7 @@ COPY . .
 RUN yarn build
 
 # Ejecuta el script deploy-commands.ts para registrar los comandos en Discord
-RUN node deploy-commands.js
+RUN node dist/deploy-commands.js
 
 # Define el comando para ejecutar tu aplicación
 CMD ["node", "dist/main.js"]
