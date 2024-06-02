@@ -11,7 +11,7 @@ dotenv.config();
 const commands = [];
 const commandsPath = join(__dirname, "commands");
 const commandFiles = readdirSync(commandsPath).filter((file) =>
-  file.endsWith(".ts")
+  file.endsWith(".js")
 );
 
 for (const file of commandFiles) {

@@ -11,19 +11,15 @@ import { Command } from "./types";
  * that are available on the commands folder
  */
 
-/*Tells to the bot the discord events he is going to process */
+/*Tells to the bot the discord the events he is going to process */
 const client = new ExtendedClient({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
+  intents: ["Guilds", "GuildMessages", "GuildVoiceStates"],
 });
 
 /*Read and register the commands*/
 const commandsPath = join(__dirname, "commands");
 const commandFiles = readdirSync(commandsPath).filter((file) =>
-  file.endsWith(".ts")
+  file.endsWith(".js")
 );
 
 for (const file of commandFiles) {
@@ -61,4 +57,4 @@ client.on("interactionCreate", async (interaction: Interaction) => {
 });
 
 // Login to Discord with your app's token
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DC_BOT_TOKEN);
