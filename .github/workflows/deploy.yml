@@ -42,7 +42,8 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
-          password: ${{ secrets.VPS_PASS_KEY }}
+          key: ${{ secrets.VPS_SSH_PRIV_KEY }}
+          passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/yor-bot-img:latest
             docker stop yor-bot-dc-container
