@@ -50,5 +50,12 @@ jobs:
             docker rm yor-bot-dc-container
             docker run -d --name yor-bot-dc-container nicodav28/yor-bot-img:latest
 
+            if docker ps | grep yor-bot-dc-container; then
+              echo "Container is running successfully"
+            else
+              echo "Failed to start container"
+              exit 1
+            fi
+
       - name: Prune System
         run: "echo y | docker system prune -a"
