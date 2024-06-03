@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/main.ts",
     "dev-win": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node src/main.ts\"",
+    "cmd-script": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/deploy-commands.ts",
     "build": "tsc",
     "serve": "node dist/main.js"
   },

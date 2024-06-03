@@ -23,8 +23,16 @@ const commandFiles = readdirSync(commandsPath).filter((file) =>
 );
 
 for (const file of commandFiles) {
-  const command: Command = require(join(commandsPath, file)).default;
-  client.commands.set(command.data.name, command);
+  try {
+    const commandModule = require(join(commandsPath, file));
+    const command: Command = commandModule.default;
+    if (!command) {
+      throw new Error(`Default export not found in ${file}`);
+    }
+    client.commands.set(command.data.name, command);
+  } catch (error) {
+    console.error(`Error loading command from ${file}:`, error);
+  }
 }
 
 client.once("ready", () => {
