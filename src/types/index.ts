@@ -1,6 +1,10 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import ExtendedClient from "../client";
 
 export interface Command {
   data: SlashCommandBuilder;
-  execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
+  execute: (
+    client: ExtendedClient,
+    interaction: ChatInputCommandInteraction
+  ) => Promise<void>;
 }
